@@ -1,3 +1,31 @@
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
+}
+
+group = 'fr.jpronote'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies{
+    compile 'com.google.code.gson:gson:2.8.6'
+}
+
+shadowJar {
+    configurations = [project.configurations.compile]
+}
+
+publishing {
+    publications {
+        compiler(MavenPublication) {
+            groupId group
+            artifactId 'jpronote'
+            version version
+            artifact new File(buildDir, 'libs/JPronote-' + version + '-all.jar')
+        }
+    }
 }
