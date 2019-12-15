@@ -1,9 +1,13 @@
 package fr.jpronote;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import fr.jpronote.auth.Session;
+import fr.jpronote.auth.OfflineSession;
+import fr.jpronote.auth.OnlineSession;
 import fr.jpronote.auth.SessionInfo;
+import fr.jpronote.handler.Mark;
+import fr.jpronote.handler.SubjectMarks;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,6 +16,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 
 public class JPronote {
 
@@ -25,7 +31,7 @@ public class JPronote {
         return url;
     }
 
-    public Session createSession(SessionInfo info) throws IOException {
+    public OnlineSession createSession(SessionInfo info) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         JsonObject request = new JsonObject();
         request.addProperty("type", info.getType().name().toLowerCase());
@@ -44,7 +50,45 @@ public class JPronote {
         outputStream.close();
         InputStream inputStream = connection.getInputStream();
         JsonObject response = JsonParser.parseReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).getAsJsonObject();
-        System.out.println(response);
-        return new Session(info, connection);
+        //System.out.println(response);
+
+        return OnlineSession.fromOffline(createSession(info, response), connection);
+    }
+
+    public static OfflineSession createSession(SessionInfo info, JsonObject jsonObject) {
+        List<List<SubjectMarks>> allMarks = new ArrayList<>();
+        for(JsonElement rawTrimesterMarks : jsonObject.getAsJsonArray("marks")) {
+            List<SubjectMarks> trimesterMarks = new ArrayList<>();
+            for(JsonElement subjectMark : rawTrimesterMarks.getAsJsonObject().getAsJsonArray("marks")) {
+                JsonObject object = subjectMark.getAsJsonObject();
+
+                List<Mark> marks = new ArrayList<>();
+
+                for(JsonElement rawMark : object.getAsJsonArray("marks")) {
+                    JsonObject markObject = rawMark.getAsJsonObject();
+                    Mark mark = new Mark(markObject.get("subject").getAsString(),
+                            markObject.get("title").getAsString(),
+                            markObject.get("away").getAsBoolean() ? -1 : markObject.get("value").getAsFloat(),
+                            markObject.get("away").getAsBoolean(),
+                            markObject.get("max").getAsFloat(),
+                            markObject.get("average").getAsFloat(),
+                            markObject.get("coefficient").getAsFloat(),
+                            markObject.get("higher").getAsFloat(),
+                            markObject.get("lower").getAsFloat(),
+                            markObject.get("time").getAsLong(),
+                            markObject.get("period").getAsShort());
+                    marks.add(mark);
+                }
+
+                SubjectMarks sMarks = new SubjectMarks(object.get("name").getAsString(),
+                        object.get("average").getAsFloat(),
+                        object.get("studentClassAverage").getAsFloat(),
+                        object.get("maxAverage").getAsFloat(),
+                        object.get("minAverage").getAsFloat(), marks);
+                trimesterMarks.add(sMarks);
+            }
+            allMarks.add(trimesterMarks);
+        }
+        return new OfflineSession(info, allMarks);
     }
 }
