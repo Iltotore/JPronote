@@ -1,5 +1,7 @@
 package fr.jpronote.handler;
 
+import com.google.gson.JsonObject;
+
 import java.util.Collection;
 
 public class Mark {
@@ -71,5 +73,19 @@ public class Mark {
 
     public Collection<Mark> getMarks() {
         return marks;
+    }
+
+    public static Mark fromJSON(JsonObject markObject) {
+        return new Mark(markObject.get("subject").getAsString(),
+                markObject.get("title").getAsString(),
+                markObject.get("away").getAsBoolean() ? -1 : markObject.get("value").getAsFloat(),
+                markObject.get("away").getAsBoolean(),
+                markObject.get("max").getAsFloat(),
+                markObject.get("average").getAsFloat(),
+                markObject.get("coefficient").getAsFloat(),
+                markObject.get("higher").getAsFloat(),
+                markObject.get("lower").getAsFloat(),
+                markObject.get("time").getAsLong(),
+                markObject.get("period").getAsShort());
     }
 }

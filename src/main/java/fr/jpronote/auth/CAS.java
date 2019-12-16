@@ -1,6 +1,6 @@
 package fr.jpronote.auth;
 
-public enum SessionContext {
+public enum CAS {
 
     AC_GRENOBLE("ac-grenoble"),
     AC_MONTPELLIER("ac-montpellier"),
@@ -15,7 +15,7 @@ public enum SessionContext {
 
     private String id;
 
-    SessionContext(String id) {
+    CAS(String id) {
         this.id = id;
     }
 

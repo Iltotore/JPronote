@@ -8,9 +8,9 @@ public class SessionInfo {
     private String username;
     private String password;
     private URL url;
-    private SessionContext context;
+    private CAS context;
 
-    public SessionInfo(SessionType type, String username, String password, URL url, SessionContext context) {
+    public SessionInfo(SessionType type, String username, String password, URL url, CAS context) {
         this.type = type;
         this.username = username;
         this.password = password;
@@ -34,7 +34,7 @@ public class SessionInfo {
         return url;
     }
 
-    public SessionContext getContext() {
+    public CAS getContext() {
         return context;
     }
 }

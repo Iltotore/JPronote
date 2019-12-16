@@ -1,6 +1,11 @@
 package fr.jpronote.handler;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class SubjectMarks {
 
@@ -41,5 +46,20 @@ public class SubjectMarks {
 
     public Collection<Mark> getMarks() {
         return marks;
+    }
+
+    public static SubjectMarks fromJSON(JsonObject object) {
+        List<Mark> marks = new ArrayList<>();
+
+        for(JsonElement rawMark : object.getAsJsonArray("marks")) {
+            JsonObject markObject = rawMark.getAsJsonObject();
+            marks.add(Mark.fromJSON(markObject));
+        }
+
+        return new SubjectMarks(object.get("name").getAsString(),
+                object.get("average").getAsFloat(),
+                object.get("studentClassAverage").getAsFloat(),
+                object.get("maxAverage").getAsFloat(),
+                object.get("minAverage").getAsFloat(), marks);
     }
 }
