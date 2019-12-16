@@ -1,5 +1,6 @@
 package fr.jpronote.auth;
 
+import fr.jpronote.handler.Homework;
 import fr.jpronote.handler.SubjectMarks;
 
 import java.util.ArrayList;
@@ -10,10 +11,12 @@ public class OfflineSession {
 
     private SessionInfo info;
     private List<List<SubjectMarks>> marks;
+    private List<Homework> homeworks;
 
-    public OfflineSession(SessionInfo info, List<List<SubjectMarks>> marks) {
+    public OfflineSession(SessionInfo info, List<List<SubjectMarks>> marks, Collection<Homework> homeworks) {
         this.info = info;
         this.marks = new ArrayList<>(marks);
+        this.homeworks = new ArrayList<>(homeworks);
     }
 
     public SessionInfo getInfo() {
@@ -33,5 +36,9 @@ public class OfflineSession {
             if(mark.getName().equals(name)) return mark;
         }
         return null;
+    }
+
+    public List<Homework> getHomeworks() {
+        return homeworks;
     }
 }

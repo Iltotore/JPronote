@@ -5,8 +5,7 @@ import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.function.Function;
+import java.util.List;
 
 public class Homework {
 
@@ -51,10 +50,18 @@ public class Homework {
     }
 
     public static Homework fromJSON(JsonObject object) {
+
+        List<PronoteFile> files = new ArrayList<>();
+
+        for(JsonElement element : object.getAsJsonArray("files")) {
+            files.add(PronoteFile.fromJSON(element.getAsJsonObject()));
+        }
+
         return new Homework(object.get("subject").getAsString(),
                 object.get("content").getAsString(),
                 object.get("since").getAsLong(),
                 object.get("until").getAsLong(),
                 object.get("toGive").getAsBoolean(),
+                files);
     }
 }

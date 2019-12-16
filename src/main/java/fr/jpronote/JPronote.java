@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import fr.jpronote.auth.OfflineSession;
 import fr.jpronote.auth.OnlineSession;
 import fr.jpronote.auth.SessionInfo;
+import fr.jpronote.handler.Homework;
 import fr.jpronote.handler.SubjectMarks;
 
 import java.io.IOException;
@@ -64,6 +65,11 @@ public class JPronote {
             }
             allMarks.add(trimesterMarks);
         }
-        return new OfflineSession(info, allMarks);
+
+        List<Homework> homeworks = new ArrayList<>();
+        jsonObject.getAsJsonArray("homeworks")
+                .forEach(element -> homeworks.add(Homework.fromJSON(element.getAsJsonObject())));
+
+        return new OfflineSession(info, allMarks, homeworks);
     }
 }
